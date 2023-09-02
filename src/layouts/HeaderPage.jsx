@@ -15,7 +15,7 @@ export default function HeaderPage() {
           <p style={{ width: "100%", textAlign: "center", fontWeight: "bold" }}>Machine Vision</p>
         </div>
       </div>
-      {pathname === "/dashboard" ? (
+      {pathname === "/dashboard" || pathname === "/" ? (
         <div style={{ padding: "40px 0px 0px 120px" }}>
           <Col span={5}>
             <Search placeholder="search by tag" allowClear enterButton="Search" size="large" onSearch={(e) => handleFilter(e)} />

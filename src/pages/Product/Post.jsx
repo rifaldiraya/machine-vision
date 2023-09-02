@@ -1,21 +1,27 @@
 import { useEffect, useState, useContext, useRef } from "react";
 import { BASE_URL, APP_ID } from "../../helper/helper";
 import { PlusOutlined } from "@ant-design/icons";
-import { Row, Col, List, notification, Drawer, FloatButton } from "antd";
+import { Row, Col, List, notification, FloatButton } from "antd";
 import { DataContext } from "../../App";
 import DrawerPost from "./DrawerPost";
+import DrawerEditPost from "./DrawerEditPost";
 import PostCard from "../../components/PostCard";
 import axios from "axios";
 
 export default function Post() {
   const { filter, handlePathname } = useContext(DataContext);
-  const [openDrawer, setOpenDrawer] = useState(false);
   const [page, setPage] = useState(1);
   const [posts, setPosts] = useState([{}]);
-  const drawerPost = useRef();
+  const drawerNewPost = useRef();
+  const drawerEditPost = useRef();
 
-  const openDrawerNewPost = () => {
-    drawerPost.current.showDrawer();
+  const openDrawerNewPost = (users) => {
+    drawerNewPost.current.showDrawer(users);
+  };
+
+  const openDrawerEditPost = (users) => {
+    console.log("TES");
+    drawerEditPost.current.showDrawer(users);
   };
 
   async function getPost() {
@@ -28,6 +34,22 @@ export default function Post() {
       })
       .then((res) => {
         setPosts(res?.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
+
+  async function getUser(identifier, editData) {
+    const urlHelper = `${BASE_URL}user`;
+    await axios
+      .get(urlHelper, {
+        headers: {
+          "app-id": APP_ID,
+        },
+      })
+      .then((res) => {
+        identifier === "ADD" ? openDrawerNewPost(res?.data?.data) : openDrawerEditPost(editData);
       })
       .catch((error) => {
         console.error(error);
@@ -67,6 +89,7 @@ export default function Post() {
               onChange: (e) => setPage(e),
               defaultCurrent: 1,
               page: page,
+              showSizeChanger: false,
               total: posts?.total,
               pageSize: 10,
               align: "center",
@@ -75,22 +98,15 @@ export default function Post() {
             dataSource={posts?.data}
             renderItem={(item) => (
               <Col span={6} style={{ paddingTop: 20 }}>
-                <PostCard postData={item} handleDelete={handleDelete} />
+                <PostCard postData={item} handleDelete={handleDelete} getUser={getUser} />
               </Col>
             )}
           />
         </Col>
       </Row>
-
-      <FloatButton onClick={openDrawerNewPost} icon={<PlusOutlined />} type="primary" style={{ right: 94 }} />
-
-      <Drawer title="Add Post" placement="right" onClose={() => false} open={openDrawer}>
-        <p>Some contents...</p>
-        <p>Some contents...</p>
-        <p>Some contents...</p>
-      </Drawer>
-
-      <DrawerPost ref={drawerPost} />
+      <FloatButton onClick={() => getUser("ADD")} icon={<PlusOutlined />} type="primary" style={{ right: 94 }} />
+      <DrawerPost ref={drawerNewPost} getPost={getPost} />
+      <DrawerEditPost ref={drawerEditPost} getPost={getPost} />
     </div>
   );
 }

@@ -23,8 +23,6 @@ export default function App() {
     setAddPost(!addPost);
   }
 
-  console.error('addPost', addPost);
-
   useEffect(() => {
     handlePathname();
   }, [window.location.pathname]);

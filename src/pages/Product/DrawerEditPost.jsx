@@ -4,7 +4,7 @@ import { PlusOutlined } from "@ant-design/icons";
 import { APP_ID, BASE_URL } from "../../helper/helper";
 import axios from "axios";
 
-const DrawerPost = forwardRef(({ getPost }, ref) => {
+const DrawerEditPost = forwardRef(({ getPost }, ref) => {
   const [usersData, setUsersData] = useState({});
   const [form] = Form.useForm();
   const [tags, setTags] = useState([]);
@@ -65,11 +65,7 @@ const DrawerPost = forwardRef(({ getPost }, ref) => {
 
   useImperativeHandle(ref, () => ({
     showDrawer(data) {
-      let helper = data.reduce((acc, item) => {
-        acc.push({ value: item.id, label: item.firstName });
-        return acc;
-      }, []);
-      setUsersData(helper);
+      setUsersData(data);
       setVisible(true);
     },
   }));
@@ -89,11 +85,11 @@ const DrawerPost = forwardRef(({ getPost }, ref) => {
       tags,
       owner,
     };
-    axios.post(`${BASE_URL}post/create`, data, { headers: { "app-id": APP_ID } }).then(() => {
+    axios.put(`${BASE_URL}post/${usersData.id}`, data, { headers: { "app-id": APP_ID } }).then(() => {
       setVisible(false);
       notification.success({
         message: "Success!",
-        description: "Successfully Add New Post",
+        description: "Successfully Edit Post",
         duration: 2,
       });
       getPost();
@@ -110,15 +106,25 @@ const DrawerPost = forwardRef(({ getPost }, ref) => {
     editInputRef.current?.focus();
   }, [editInputValue]);
 
+  useEffect(() => {
+    form.setFieldsValue({
+      text: usersData.text,
+      image: usersData.image,
+      likes: usersData.likes,
+      owner: usersData?.owner?.firstName,
+    });
+    setTags(usersData.tags);
+  }, [usersData]);
+
   return (
-    <Drawer title="Add Post" placement="right" open={visible} onClose={closeDrawer} width="25%" forceRender={true}>
+    <Drawer title="Edit Post" placement="right" open={visible} onClose={closeDrawer} width="25%" forceRender={true}>
       <Form layout="vertical" form={form} onFinish={onFinish}>
         <Form.Item name="owner" label="Owner" rules={[{ message: "Input owner's name" }]}>
           <Select
             style={{
               width: "100%",
             }}
-            options={usersData.length > 1 ? usersData : []}
+            disabled
           />
         </Form.Item>
         <Form.Item name="text" label="Description/Text" rules={[{ message: "Input description" }]}>
@@ -132,7 +138,7 @@ const DrawerPost = forwardRef(({ getPost }, ref) => {
         </Form.Item>
         <Form.Item name="tags" label="Tag" rules={[{ message: "Input tag" }]}>
           <Space size={[0, 8]} wrap>
-            {tags.map((tag, index) => {
+            {tags?.map((tag, index) => {
               if (editInputIndex === index) {
                 return (
                   <Input
@@ -200,7 +206,7 @@ const DrawerPost = forwardRef(({ getPost }, ref) => {
           <Col span={12}></Col>
           <Col span={12} style={{ textAlign: "right" }}>
             <Button type="primary" style={{ marginRight: 0, width: 150, borderRadius: 6 }} htmlType="submit">
-              Add Post
+              Edit Post
             </Button>
           </Col>
         </Row>
@@ -209,6 +215,6 @@ const DrawerPost = forwardRef(({ getPost }, ref) => {
   );
 });
 
-DrawerPost.displayName = "DrawerPost";
+DrawerEditPost.displayName = "DrawerEditPost";
 
-export default DrawerPost;
+export default DrawerEditPost;

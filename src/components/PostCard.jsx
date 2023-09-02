@@ -1,10 +1,10 @@
 import { memo } from "react";
 import { Tag, Card, Row, Col } from "antd";
 import { Link } from "react-router-dom";
-import { DeleteOutlined, EllipsisOutlined } from "@ant-design/icons";
+import { DeleteOutlined, EllipsisOutlined, EditOutlined } from "@ant-design/icons";
 import * as color from "../assets/color";
 
-function PostCard({ postData, handleDelete }) {
+function PostCard({ postData, handleDelete, getUser }) {
   return (
     <div>
       <Card
@@ -19,10 +19,13 @@ function PostCard({ postData, handleDelete }) {
             {`${postData?.owner?.firstName} - ${postData?.owner?.lastName}`}
             <span style={{ color: color.redBalance, float: "right" }}>
               <Row gutter={6}>
-                <Col span={12} onClick={() => handleDelete(postData.id)}>
+                <Col span={8} onClick={() => getUser("EDIT", postData)}>
+                  <EditOutlined style={{ color: color.greenBalance }} />
+                </Col>
+                <Col span={8} onClick={() => handleDelete(postData.id)}>
                   <DeleteOutlined />
                 </Col>
-                <Col span={12}>
+                <Col span={8}>
                   <Link
                     to={{
                       pathname: `/post/${postData.id}`,
