@@ -10,6 +10,11 @@ export default function App() {
   const [filter, setFilters] = useState("");
   const [pathname, setPathname] = useState("");
   const [addPost, setAddPost] = useState(false);
+  const [globalUser, setGlobalUser] = useState();
+
+  function handleUser(val) {
+    setGlobalUser(val);
+  }
 
   function handleFilter(val) {
     setFilters(val);
@@ -29,7 +34,7 @@ export default function App() {
 
   return (
     <BrowserRouter className="App">
-      <DataContext.Provider value={{ handleFilter, filter, handlePathname, pathname, handleAddPost, addPost }}>
+      <DataContext.Provider value={{ handleFilter, filter, handlePathname, pathname, handleAddPost, addPost, handleUser, globalUser }}>
         <HeaderPage className="site-layout-sub-header-background" style={{ padding: 0, backgroundColor: "white" }} />
         <RoutePages />
       </DataContext.Provider>

@@ -9,25 +9,31 @@ import PostCard from "../../components/PostCard";
 import axios from "axios";
 
 export default function Post() {
-  const { filter, handlePathname } = useContext(DataContext);
+  const { filter, handlePathname, globalUser } = useContext(DataContext);
   const [page, setPage] = useState(1);
   const [posts, setPosts] = useState([{}]);
   const drawerNewPost = useRef();
   const drawerEditPost = useRef();
+
+  console.log(globalUser);
 
   const openDrawerNewPost = (users) => {
     drawerNewPost.current.showDrawer(users);
   };
 
   const openDrawerEditPost = (users) => {
-    console.log("TES");
     drawerEditPost.current.showDrawer(users);
   };
 
-  async function getPost() {
+  async function getPost(identifier = "") {
     const urlHelper = filter === "" ? `${BASE_URL}post?${filter}limit=10&page=${page}` : `${BASE_URL}tag/${filter}/post?limit=10&page=${page}`;
+    const urlFilterByUser =
+      globalUser === undefined || globalUser === ""
+        ? `${BASE_URL}post?${filter}limit=10&page=${page}`
+        : `${BASE_URL}user/${globalUser}/post?limit=10&page=${page}`;
+
     await axios
-      .get(urlHelper, {
+      .get(identifier === "user" ? urlFilterByUser : urlHelper, {
         headers: {
           "app-id": APP_ID,
         },
@@ -79,6 +85,10 @@ export default function Post() {
     getPost();
     handlePathname("dashboard");
   }, [filter, page]);
+
+  useEffect(() => {
+    getPost("user");
+  }, [globalUser]);
 
   return (
     <div style={{ padding: "0px 120px 20px 120px" }}>

@@ -85,15 +85,24 @@ const DrawerEditPost = forwardRef(({ getPost }, ref) => {
       tags,
       owner,
     };
-    axios.put(`${BASE_URL}post/${usersData.id}`, data, { headers: { "app-id": APP_ID } }).then(() => {
-      setVisible(false);
-      notification.success({
-        message: "Success!",
-        description: "Successfully Edit Post",
-        duration: 2,
+    axios
+      .put(`${BASE_URL}post/${usersData.id}`, data, { headers: { "app-id": APP_ID } })
+      .then(() => {
+        setVisible(false);
+        notification.success({
+          message: "Success!",
+          description: "Successfully Edit Post",
+          duration: 2,
+        });
+        getPost();
+      })
+      .catch((error) => {
+        notification.error({
+          message: "Failed!",
+          description: "Double Check Your Fields",
+          duration: 2,
+        });
       });
-      getPost();
-    });
   };
 
   useEffect(() => {

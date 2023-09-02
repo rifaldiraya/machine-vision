@@ -89,15 +89,24 @@ const DrawerPost = forwardRef(({ getPost }, ref) => {
       tags,
       owner,
     };
-    axios.post(`${BASE_URL}post/create`, data, { headers: { "app-id": APP_ID } }).then(() => {
-      setVisible(false);
-      notification.success({
-        message: "Success!",
-        description: "Successfully Add New Post",
-        duration: 2,
+    axios
+      .post(`${BASE_URL}post/create`, data, { headers: { "app-id": APP_ID } })
+      .then(() => {
+        setVisible(false);
+        notification.success({
+          message: "Success!",
+          description: "Successfully Add New Post",
+          duration: 2,
+        });
+        getPost();
+      })
+      .catch((error) => {
+        notification.error({
+          message: "Failed!",
+          description: "Double Check Your Fields",
+          duration: 2,
+        });
       });
-      getPost();
-    });
   };
 
   useEffect(() => {
